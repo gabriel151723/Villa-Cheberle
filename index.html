@@ -1,0 +1,1481 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Villa Cheberle | Espaço Garden e Chácara de Herança Europeia</title>
+  <meta name="description" content="A atmosfera das vilas europeias para celebrações memoráveis de até 350 convidados. Exclusividade de um evento por dia na Região Metropolitana de Salvador.">
+
+  <!-- Fontes Tipográficas Nobres -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Biblioteca de Ícones Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Tailwind CSS Framework CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet CSS para o Mapa Interativo -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <!-- Leaflet JS para Renderização Cartográfica -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            travertine: '#F5EFEB',
+            'travertine-light': '#FAF7F5',
+            'travertine-muted': '#EAE3DD',
+            'travertine-border': '#DDD5CD',
+            olive: '#4B5E43',
+            'olive-light': '#5F7655',
+            moss: '#2F3E2B',
+            'moss-dark': '#222D1F',
+            bordeaux: '#581825',
+            'bordeaux-noble': '#3F111A',
+            'bordeaux-glow': '#7A2234',
+            graphite: '#262624',
+            'graphite-muted': '#585854',
+            warmgold: '#C5A880'
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            inter: ['Inter', 'sans-serif'],
+          },
+          boxShadow: {
+            'rustic': '0 12px 35px -8px rgba(47, 62, 43, 0.08), 0 4px 12px -2px rgba(47, 62, 43, 0.04)',
+            'bordeaux-glow': '0 8px 30px -4px rgba(88, 24, 37, 0.35)',
+            'card-warm': '0 8px 24px -6px rgba(38, 38, 36, 0.06)',
+            'elevation-hover': '0 20px 40px -12px rgba(47, 62, 43, 0.14)',
+            'gold-beam': '0 0 16px 2px rgba(197, 168, 128, 0.75)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F5EFEB;
+      color: #262624;
+      font-family: 'Inter', sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .font-serif-noble {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.03em;
+    }
+    
+    /* Faixa Luminosa Dinâmica de Rolagem */
+    #scroll-luminous-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3.5px;
+      width: 0%;
+      background: linear-gradient(90deg, #581825 0%, #C5A880 50%, #FAF7F5 100%);
+      box-shadow: 0 0 12px rgba(197, 168, 128, 0.85), 0 0 4px rgba(88, 24, 37, 0.6);
+      z-index: 100;
+      transition: width 0.12s ease-out;
+      pointer-events: none;
+    }
+    #scroll-luminous-bar::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: -2px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #FAF7F5;
+      box-shadow: 0 0 14px 4px #C5A880;
+    }
+
+    /* Sistema de Animação Progressiva por Scroll (Fade-In e Elevação) */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.12s; }
+    .reveal-delay-2 { transition-delay: 0.24s; }
+    .reveal-delay-3 { transition-delay: 0.36s; }
+
+    /* Zoom Suave Editorial para Imagens */
+    .image-zoom-frame {
+      overflow: hidden;
+    }
+    .image-zoom-frame img {
+      transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .image-zoom-frame:hover img {
+      transform: scale(1.04);
+    }
+
+    /* Customização do Marcador e Popup do Leaflet */
+    .custom-leaflet-marker {
+      background: #581825;
+      color: #FAF7F5;
+      border: 2px solid #C5A880;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(88, 24, 37, 0.45);
+      animation: pulse-ring 2.4s infinite;
+    }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(88, 24, 37, 0.5); }
+      70% { box-shadow: 0 0 0 14px rgba(88, 24, 37, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(88, 24, 37, 0); }
+    }
+    .leaflet-popup-content-wrapper {
+      background-color: #FAF7F5;
+      border-radius: 16px;
+      padding: 6px;
+      border: 1px solid #DDD5CD;
+      box-shadow: 0 12px 30px rgba(47, 62, 43, 0.15);
+      color: #262624;
+      font-family: 'Inter', sans-serif;
+    }
+    .leaflet-popup-tip {
+      background-color: #FAF7F5;
+    }
+
+    /* Calibragem cromática para integração visual do mapa com a paleta travertino */
+    .leaflet-tile-pane {
+      filter: contrast(0.96) saturate(0.85) sepia(0.1);
+    }
+  </style>
+</head>
+<body class="selection:bg-bordeaux selection:text-travertine-light min-h-screen relative flex flex-col">
+
+  <div id="scroll-luminous-bar" aria-hidden="true"></div>
+
+  <header id="main-nav" class="sticky top-0 z-50 transition-all duration-300 bg-travertine/95 backdrop-blur-md border-b border-travertine-border">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2 sm:gap-4">
+      
+      <!-- Identidade Visual Principal com Largura Estabilizada e Proteção de Transbordamento -->
+      <a href="#" class="group flex items-center space-x-2 sm:space-x-3 shrink min-w-0 focus:outline-none" aria-label="Villa Cheberle Página Inicial">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-olive/30 flex items-center justify-center bg-travertine-light shadow-sm text-olive transition-all group-hover:border-bordeaux group-hover:text-bordeaux shrink-0">
+          <i data-lucide="castle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-serif-noble text-base sm:text-xl font-bold tracking-wider text-graphite group-hover:text-bordeaux transition-colors leading-none truncate">VILLA CHEBERLE</span>
+          <span class="text-[8px] sm:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.22em] text-olive font-medium mt-1 truncate">Espaço Garden Europeu</span>
+        </div>
+      </a>
+
+      <!-- Navegação Âncora Desktop Otimizada para Evitar Quebras em Telas Intermediárias -->
+      <nav class="hidden xl:flex items-center space-x-7 text-sm font-medium text-graphite shrink-0">
+        <a href="#cenarios" class="hover:text-bordeaux transition-colors py-1">Cenários</a>
+        <a href="#planta-baixa" class="hover:text-bordeaux transition-colors py-1">Planta Interativa</a>
+        <a href="#fornecedores" class="hover:text-bordeaux transition-colors py-1">Homologados</a>
+        <a href="#depoimentos" class="hover:text-bordeaux transition-colors py-1">Avaliações 5.0</a>
+        <a href="#localizacao" class="hover:text-bordeaux transition-colors py-1">Onde nos Encontrar</a>
+      </nav>
+
+      <!-- Bloco de Ações e Redes com Dimensionamento Responsivo Seguro -->
+      <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+        <div class="hidden md:flex items-center space-x-2 border-r border-travertine-border pr-3">
+          <a href="https://www.instagram.com/villacheberle?stkn=MTVtMjl2eGw5M3R0eg==" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-travertine-muted/80 hover:bg-olive hover:text-travertine-light flex items-center justify-center text-graphite transition-all duration-200" title="Instagram Oficial" aria-label="Acessar Instagram Oficial">
+            <i data-lucide="instagram" class="w-4 h-4"></i>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61555730407868" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-travertine-muted/80 hover:bg-olive hover:text-travertine-light flex items-center justify-center text-graphite transition-all duration-200" title="Facebook Oficial" aria-label="Acessar Facebook Oficial">
+            <i data-lucide="facebook" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+        <!-- Botão Consultar com rótulo adaptativo para dispositivos móveis compactos -->
+        <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20a%20disponibilidade%20de%20datas%20na%20Villa%20Cheberle%20para%20o%20meu%20evento." target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 sm:space-x-2 bg-bordeaux hover:bg-bordeaux-noble text-travertine-light px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium tracking-wide transition-all duration-300 hover:shadow-bordeaux-glow hover:scale-[1.02] shrink-0">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0"></i>
+          <span class="hidden sm:inline whitespace-nowrap">Consultar Datas</span>
+          <span class="sm:hidden whitespace-nowrap font-semibold">Consultar</span>
+        </a>
+
+        <!-- Botão Menu Mobile Visível até Telas XL -->
+        <button id="mobile-menu-btn" class="xl:hidden p-1.5 sm:p-2 rounded-xl text-graphite hover:text-bordeaux focus:outline-none hover:bg-travertine-muted/60 transition-colors shrink-0" aria-label="Alternar Menu de Navegação">
+          <i data-lucide="menu" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden xl:hidden border-t border-travertine-border bg-travertine-light px-6 py-5 space-y-4 shadow-lg">
+      <a href="#cenarios" class="block text-graphite font-medium hover:text-bordeaux mobile-nav-link py-1">Cenários Arquitetônicos</a>
+      <a href="#planta-baixa" class="block text-graphite font-medium hover:text-bordeaux mobile-nav-link py-1">Planta Baixa Operacional</a>
+      <a href="#fornecedores" class="block text-graphite font-medium hover:text-bordeaux mobile-nav-link py-1">Fornecedores Homologados</a>
+      <a href="#depoimentos" class="block text-graphite font-medium hover:text-bordeaux mobile-nav-link py-1">Depoimentos Verificados</a>
+      <a href="#localizacao" class="block text-graphite font-medium hover:text-bordeaux mobile-nav-link py-1">Onde nos Encontrar (Mapa)</a>
+      <a href="#seletor-reserva" class="block text-bordeaux font-semibold mobile-nav-link py-1">Simular Orçamento Personalizado</a>
+      <div class="flex items-center space-x-4 pt-3 border-t border-travertine-border">
+        <a href="https://www.instagram.com/villacheberle?stkn=MTVtMjl2eGw5M3R0eg==" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-sm text-graphite hover:text-olive">
+          <i data-lucide="instagram" class="w-4 h-4"></i>
+          <span>@villacheberle</span>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61555730407868" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-sm text-graphite hover:text-olive">
+          <i data-lucide="facebook" class="w-4 h-4"></i>
+          <span>Facebook</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <section class="relative pt-10 pb-16 md:pt-20 md:pb-28 overflow-hidden">
+      <!-- Elementos Decorativos Sutis -->
+      <div class="absolute inset-0 pointer-events-none opacity-40">
+        <div class="absolute -top-32 right-0 w-96 h-96 rounded-full bg-warmgold/15 blur-3xl"></div>
+        <div class="absolute top-1/2 -left-20 w-80 h-80 rounded-full bg-olive/10 blur-3xl"></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          <!-- Coluna Editorial Textual -->
+          <div class="lg:col-span-7 space-y-7 reveal">
+            <div class="inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full bg-travertine-muted border border-travertine-border text-olive text-xs font-semibold uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-olive animate-pulse"></span>
+              <span>Exclusividade Rústica Europeia na Grande Salvador</span>
+            </div>
+
+            <h1 class="font-serif-noble text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-graphite font-bold leading-[1.14]">
+              A atmosfera das <span class="italic font-normal text-bordeaux">vilas europeias</span> para celebrações memoráveis de até 350 convidados.
+            </h1>
+
+            <p class="text-base sm:text-lg text-graphite-muted leading-relaxed font-normal max-w-2xl">
+              Arquitetura toscana autêntica, integrada a jardins maduros de alta preservação, deck suspenso com lago de carpas e infraestrutura técnica de vanguarda com suporte operacional completo.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
+              <div class="flex items-center space-x-3 p-3.5 rounded-2xl bg-travertine-light/95 border border-travertine-border shadow-sm">
+                <div class="p-2 rounded-xl bg-olive/10 text-olive shrink-0">
+                  <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-graphite uppercase tracking-wide">1 Evento por Dia</h4>
+                  <p class="text-[11px] text-graphite-muted leading-tight">Privacidade absoluta</p>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-3 p-3.5 rounded-2xl bg-travertine-light/95 border border-travertine-border shadow-sm">
+                <div class="p-2 rounded-xl bg-olive/10 text-olive shrink-0">
+                  <i data-lucide="volume-x" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-graphite uppercase tracking-wide">Isolamento Acústico</h4>
+                  <p class="text-[11px] text-graphite-muted leading-tight">Barreira natural sem eco</p>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-3 p-3.5 rounded-2xl bg-travertine-light/95 border border-travertine-border shadow-sm">
+                <div class="p-2 rounded-xl bg-olive/10 text-olive shrink-0">
+                  <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-graphite uppercase tracking-wide">Retaguarda VIP</h4>
+                  <p class="text-[11px] text-graphite-muted leading-tight">Suítes climatizadas</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-5">
+              <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20verificar%20a%20disponibilidade%20de%20data%20e%20agendar%20uma%20visita%20guiada%20na%20Villa%20Cheberle." target="_blank" rel="noopener noreferrer" class="group relative inline-flex items-center justify-center space-x-3 bg-bordeaux hover:bg-bordeaux-noble text-travertine-light px-8 py-4 rounded-full font-medium text-sm tracking-wider transition-all duration-300 shadow-bordeaux-glow hover:scale-[1.02]">
+                <span>Verificar Disponibilidade de Data</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
+              </a>
+
+              <a href="#cenarios" class="inline-flex items-center justify-center space-x-2 text-graphite hover:text-olive px-6 py-4 rounded-full border border-travertine-border bg-travertine-light text-sm font-medium transition-all hover:bg-travertine-muted">
+                <i data-lucide="compass" class="w-4 h-4 text-olive"></i>
+                <span>Explorar os 3 Cenários</span>
+              </a>
+            </div>
+
+            <!-- Assinatura de Validação Social -->
+            <div class="flex items-center space-x-4 pt-2 text-xs text-graphite-muted">
+              <div class="flex items-center text-warmgold">
+                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              </div>
+              <span><strong>5.0 no Google Maps</strong> por casais e debutantes</span>
+              <span class="inline-block w-1.5 h-1.5 rounded-full bg-olive"></span>
+              <span>Contato Oficial: (71) 98199-0320</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 relative reveal reveal-delay-2">
+            <div class="relative mx-auto max-w-md lg:max-w-none">
+              <!-- Cartão de Arquitetura Principal -->
+              <div class="image-zoom-frame rounded-3xl overflow-hidden border border-travertine-border shadow-rustic bg-travertine-light p-2.5">
+                <div class="relative h-96 sm:h-[480px] rounded-2xl overflow-hidden">
+                  <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80" alt="Villa Cheberle Recepção Noturna e Cascata Iluminada" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x1000/2F3E2B/F5EFEB?text=Villa+Cheberle+Garden'">
+                  <div class="absolute inset-0 bg-gradient-to-t from-moss-dark/85 via-transparent to-transparent"></div>
+                  
+                  <div class="absolute bottom-5 left-5 right-5 text-travertine-light">
+                    <span class="px-2.5 py-1 rounded-md bg-bordeaux/90 text-[10px] uppercase font-bold tracking-widest text-travertine-light">Cenário Ícone</span>
+                    <h3 class="font-serif-noble text-xl font-semibold mt-2">Salão Panorâmico & Cascata</h3>
+                    <p class="text-xs text-travertine-muted mt-1">Conexão fluida entre jardim rústico e salão envidraçado.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pílula Flutuante de Capacidade -->
+              <div class="absolute -bottom-6 -left-4 sm:-left-6 bg-travertine-light p-4 rounded-2xl border border-travertine-border shadow-card-warm flex items-center space-x-3.5 max-w-[240px]">
+                <div class="w-10 h-10 rounded-xl bg-olive text-travertine-light flex items-center justify-center shrink-0">
+                  <i data-lucide="users" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs text-graphite-muted">Capacidade Nobre</div>
+                  <div class="font-serif-noble text-sm font-bold text-graphite">Até 350 Lugares</div>
+                </div>
+              </div>
+
+              <!-- Selo Toscano Flutuante Superior -->
+              <div class="absolute -top-4 -right-3 sm:-right-4 bg-bordeaux text-travertine-light px-4 py-2.5 rounded-2xl shadow-rustic flex items-center space-x-2">
+                <i data-lucide="flower" class="w-4 h-4 text-warmgold"></i>
+                <span class="font-serif-noble text-xs font-semibold tracking-wider">Patrimônio Vivo</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="cenarios" class="py-20 bg-travertine-muted/50 border-y border-travertine-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto space-y-3 mb-14 reveal">
+          <span class="text-olive uppercase tracking-[0.2em] text-xs font-semibold">Cenografia Natural e Arquitetura</span>
+          <h2 class="font-serif-noble text-3xl sm:text-4xl text-graphite font-bold">
+            Três Ambientes Integrados com Singularidade Europeia
+          </h2>
+          <p class="text-graphite-muted text-sm sm:text-base leading-relaxed">
+            Cada espaço foi concebido para proporcionar transições suaves entre cerimônia solene, coquetel ao entardecer e banquete festivo sob as estrelas.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <!-- Cenário 1: Lago de Carpas -->
+          <div class="bg-travertine-light rounded-3xl border border-travertine-border overflow-hidden shadow-rustic flex flex-col justify-between group reveal">
+            <div class="image-zoom-frame relative h-64 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=800&q=80" alt="Lago de Carpas e Deck de Contemplação" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/4B5E43/F5EFEB?text=Lago+de+Carpas'">
+              <div class="absolute top-4 left-4 bg-moss/80 backdrop-blur-sm text-travertine-light px-3 py-1 rounded-full text-xs font-medium">
+                Cerimônias Intimistas
+              </div>
+            </div>
+            
+            <div class="p-6 sm:p-7 flex-grow flex flex-col justify-between space-y-6">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-serif-noble text-xl font-bold text-graphite">O Lago de Carpas</h3>
+                  <span class="text-xs text-olive font-semibold">Deck 210 m²</span>
+                </div>
+                <p class="text-xs sm:text-sm text-graphite-muted leading-relaxed">
+                  Passarela de madeira rústica e deck de contemplação flutuante sobre águas cristalinas com carpas nishikigoi. Reflexos dourados ideais para cortejos ao pôr do sol.
+                </p>
+              </div>
+
+              <div class="pt-4 border-t border-travertine-border/80 grid grid-cols-3 gap-2 text-center">
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Capacidade</span>
+                  <strong class="text-xs font-bold text-graphite">160 Sentados</strong>
+                </div>
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Área Útil</span>
+                  <strong class="text-xs font-bold text-graphite">210 m²</strong>
+                </div>
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Elétrica</span>
+                  <strong class="text-xs font-bold text-graphite">4 Circuitos</strong>
+                </div>
+              </div>
+
+              <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20e%20disponibilidade%20para%20cerim%C3%B4nia%20no%20cen%C3%A1rio%20O%20Lago%20de%20Carpas%20da%20Villa%20Cheberle." target="_blank" rel="noopener noreferrer" class="w-full text-center py-2.5 rounded-xl border border-olive/30 text-olive hover:bg-olive hover:text-travertine-light text-xs font-semibold transition-colors duration-200">
+                Consultar Cerimônia no Lago
+              </a>
+            </div>
+          </div>
+
+          <!-- Cenário 2: Cascata Iluminada -->
+          <div class="bg-travertine-light rounded-3xl border border-travertine-border overflow-hidden shadow-rustic flex flex-col justify-between group reveal reveal-delay-1">
+            <div class="image-zoom-frame relative h-64 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80" alt="Cascata Iluminada em Pedras Naturais" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/2F3E2B/F5EFEB?text=Cascata+Iluminada'">
+              <div class="absolute top-4 left-4 bg-bordeaux/90 backdrop-blur-sm text-travertine-light px-3 py-1 rounded-full text-xs font-medium">
+                Ponto Fotográfico Icônico
+              </div>
+            </div>
+            
+            <div class="p-6 sm:p-7 flex-grow flex flex-col justify-between space-y-6">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-serif-noble text-xl font-bold text-graphite">A Cascata Iluminada</h3>
+                  <span class="text-xs text-olive font-semibold">Pátio 180 m²</span>
+                </div>
+                <p class="text-xs sm:text-sm text-graphite-muted leading-relaxed">
+                  Engenharia em rochas vulcânicas e musgos com queda constante de água e sistema dimerizado de iluminação dourada (2700K). O ponto fotográfico mais disputado da região.
+                </p>
+              </div>
+
+              <div class="pt-4 border-t border-travertine-border/80 grid grid-cols-3 gap-2 text-center">
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Lounge</span>
+                  <strong class="text-xs font-bold text-graphite">140 Pessoas</strong>
+                </div>
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Área Útil</span>
+                  <strong class="text-xs font-bold text-graphite">180 m²</strong>
+                </div>
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Iluminação</span>
+                  <strong class="text-xs font-bold text-graphite">Cênica LED</strong>
+                </div>
+              </div>
+
+              <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20o%20cen%C3%A1rio%20A%20Cascata%20Iluminada%20para%20o%20meu%20evento%20na%20Villa%20Cheberle." target="_blank" rel="noopener noreferrer" class="w-full text-center py-2.5 rounded-xl border border-olive/30 text-olive hover:bg-olive hover:text-travertine-light text-xs font-semibold transition-colors duration-200">
+                Reservar Lounge da Cascata
+              </a>
+            </div>
+          </div>
+
+          <!-- Cenário 3: O Espaço Garden Principal -->
+          <div class="bg-travertine-light rounded-3xl border border-travertine-border overflow-hidden shadow-rustic flex flex-col justify-between group reveal reveal-delay-2">
+            <div class="image-zoom-frame relative h-64 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=800&q=80" alt="Espaço Garden Salão Envidraçado" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/581825/F5EFEB?text=Espaco+Garden'">
+              <div class="absolute top-4 left-4 bg-olive/90 backdrop-blur-sm text-travertine-light px-3 py-1 rounded-full text-xs font-medium">
+                Salão Principal
+              </div>
+            </div>
+            
+            <div class="p-6 sm:p-7 flex-grow flex flex-col justify-between space-y-6">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-serif-noble text-xl font-bold text-graphite">O Espaço Garden</h3>
+                  <span class="text-xs text-olive font-semibold">Salão 420 m²</span>
+                </div>
+                <p class="text-xs sm:text-sm text-graphite-muted leading-relaxed">
+                  Estrutura metálica rústica envidraçada, climatização central silenciosa, pergolados floridos de bougainville e piso em pedra térmica, unindo conforto absoluto à natureza externa.
+                </p>
+              </div>
+
+              <div class="pt-4 border-t border-travertine-border/80 grid grid-cols-3 gap-2 text-center">
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Banquete</span>
+                  <strong class="text-xs font-bold text-graphite">350 Convidados</strong>
+                </div>
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Área Total</span>
+                  <strong class="text-xs font-bold text-graphite">420 m²</strong>
+                </div>
+                <div class="bg-travertine-muted/50 p-2.5 rounded-xl">
+                  <span class="block text-[10px] text-graphite-muted uppercase font-medium">Carga</span>
+                  <strong class="text-xs font-bold text-graphite">120 kVA Full</strong>
+                </div>
+              </div>
+
+              <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20a%20loca%C3%A7%C3%A3o%20do%20Espa%C3%A7o%20Garden%20Principal%20da%20Villa%20Cheberle." target="_blank" rel="noopener noreferrer" class="w-full text-center py-2.5 rounded-xl border border-olive/30 text-olive hover:bg-olive hover:text-travertine-light text-xs font-semibold transition-colors duration-200">
+                Consultar Espaço Garden
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="planta-baixa" class="py-20 bg-travertine relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 reveal">
+          <div class="max-w-2xl space-y-3">
+            <span class="text-olive uppercase tracking-[0.2em] text-xs font-semibold">Engenharia de Eventos e Fluxos</span>
+            <h2 class="font-serif-noble text-3xl sm:text-4xl text-graphite font-bold">
+              Planta Baixa Interativa: Distribuição Espacial
+            </h2>
+            <p class="text-graphite-muted text-sm sm:text-base leading-relaxed">
+              Alterne entre as configurações oficiais para visualizar a circulação otimizada, posicionamento das ilhas gastronômicas, pista de alta performance e isolamento do fluxo de bastidores.
+            </p>
+          </div>
+
+          <div class="mt-6 md:mt-0 flex flex-wrap gap-1.5 p-1.5 rounded-2xl bg-travertine-muted border border-travertine-border self-start">
+            <button onclick="setFloorPlan('casamento')" id="tab-casamento" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 bg-olive text-travertine-light shadow-sm">
+              Casamento Completo
+            </button>
+            <button onclick="setFloorPlan('quinze')" id="tab-quinze" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 text-graphite hover:text-bordeaux">
+              15 Anos e Debutante
+            </button>
+            <button onclick="setFloorPlan('corporativo')" id="tab-corporativo" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 text-graphite hover:text-bordeaux">
+              Corporativo e Solene
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start bg-travertine-light p-5 sm:p-8 lg:p-10 rounded-3xl border border-travertine-border shadow-rustic reveal">
+          
+          <!-- Card Diagramático Principal com Altura Flexível sem Transbordamento -->
+          <div class="lg:col-span-8 bg-travertine p-4 sm:p-6 rounded-2xl border border-travertine-border flex flex-col justify-between w-full overflow-hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 mb-4 border-b border-travertine-border text-xs text-graphite-muted gap-2">
+              <span class="flex items-center space-x-2 font-bold text-graphite">
+                <i data-lucide="layers" class="w-4 h-4 text-olive shrink-0"></i>
+                <span id="diagram-title">Layout: Cerimônia no Deck e Banquete Garden</span>
+              </span>
+              <span class="text-[11px] bg-travertine-muted px-2.5 py-1 rounded-md text-olive font-semibold self-start sm:self-auto shrink-0">Circulação Livre: 1.80m mín.</span>
+            </div>
+
+            <!-- Container do Esquema Técnico com Redimensionamento Responsivo Suave -->
+            <div class="relative w-full min-h-[380px] sm:min-h-[420px] bg-[#FAF7F2] rounded-xl border border-travertine-border/70 p-3 sm:p-5 flex flex-col justify-between gap-3">
+              
+              <!-- Zona de Cerimônia / Deck -->
+              <div class="w-full rounded-xl border-2 border-dashed border-olive/40 bg-olive/5 flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:px-6 transition-all duration-300 gap-1" id="zone-ceremony">
+                <div class="flex items-center space-x-2.5">
+                  <span class="w-3 h-3 rounded-full bg-olive shrink-0"></span>
+                  <span class="text-xs sm:text-sm font-bold text-olive" id="zone-ceremony-label">Área de Cerimônia / Deck do Lago</span>
+                </div>
+                <span class="text-[11px] font-semibold text-olive/80 pl-5 sm:pl-0" id="zone-ceremony-sub">160 Cadeiras Tiffany + Altar Flutuante</span>
+              </div>
+
+              <!-- Zona Central com Grid Fluido -->
+              <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 flex-grow my-1">
+                <div class="rounded-xl border border-travertine-border bg-travertine-light p-3 sm:p-4 flex flex-col justify-center items-center text-center transition-all duration-300 shadow-sm" id="zone-tables-left">
+                  <i data-lucide="utensils" class="w-5 h-5 text-bordeaux mb-1.5 shrink-0"></i>
+                  <span class="text-xs font-bold text-graphite leading-snug">Mesas Convidados</span>
+                  <span class="text-[10px] text-graphite-muted mt-0.5 leading-tight" id="zone-tables-count">16 Mesas Redondas</span>
+                </div>
+
+                <div class="rounded-xl border-2 border-bordeaux/40 bg-bordeaux/5 p-3 sm:p-4 flex flex-col justify-center items-center text-center transition-all duration-300 shadow-sm" id="zone-center">
+                  <i data-lucide="disc" class="w-5 h-5 text-bordeaux mb-1.5 shrink-0 animate-spin" style="animation-duration: 9s;"></i>
+                  <span class="text-xs font-bold text-bordeaux leading-snug" id="zone-center-title">Pista Central</span>
+                  <span class="text-[10px] text-bordeaux/80 mt-0.5 leading-tight" id="zone-center-sub">Piso Térmico e Som Suspenso</span>
+                </div>
+
+                <div class="rounded-xl border border-travertine-border bg-travertine-light p-3 sm:p-4 flex flex-col justify-center items-center text-center transition-all duration-300 shadow-sm" id="zone-tables-right">
+                  <i data-lucide="wine" class="w-5 h-5 text-warmgold mb-1.5 shrink-0"></i>
+                  <span class="text-xs font-bold text-graphite leading-snug" id="zone-right-title">Ilha de Bar 360°</span>
+                  <span class="text-[10px] text-graphite-muted mt-0.5 leading-tight">Baristas e Coquetelaria</span>
+                </div>
+              </div>
+
+              <!-- Corredor Técnico Operacional -->
+              <div class="w-full rounded-xl border border-dashed border-graphite/20 bg-travertine-muted/60 flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:px-5 gap-1">
+                <div class="flex items-center space-x-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-graphite/40 shrink-0"></span>
+                  <span class="text-[11px] font-semibold text-graphite leading-tight">Acesso Logístico Isolado (Buffet / Doca de Carga / Gerador)</span>
+                </div>
+                <span class="text-[10px] text-olive font-bold pl-4 sm:pl-0 shrink-0">Zero interferência com convidados</span>
+              </div>
+            </div>
+
+            <!-- Legenda da Planta Baixa Redesenhada em Flexbox Flexível -->
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4 mt-4 pt-3.5 border-t border-travertine-border text-[11px] text-graphite-muted">
+              <div class="flex items-center space-x-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-olive/30 border border-olive shrink-0"></span>
+                <span>Zonas Cerimonial</span>
+              </div>
+              <div class="flex items-center space-x-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-bordeaux/30 border border-bordeaux shrink-0"></span>
+                <span>Foco Social e Dança</span>
+              </div>
+              <div class="flex items-center space-x-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-travertine-muted border border-travertine-border shrink-0"></span>
+                <span>Gastronomia e Estações</span>
+              </div>
+              <div class="flex items-center space-x-1.5">
+                <span class="w-2.5 h-2.5 rounded-full border border-dashed border-graphite/50 shrink-0"></span>
+                <span>Retaguarda Operacional</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna Editorial Lateral da Planta Baixa -->
+          <div class="lg:col-span-4 space-y-6">
+            <div>
+              <span class="text-[11px] uppercase tracking-wider text-olive font-bold block mb-1">Engenharia de Conforto</span>
+              <h3 id="plan-headline" class="font-serif-noble text-2xl font-bold text-graphite">
+                Harmonia Operacional para Casamentos
+              </h3>
+              <p id="plan-description" class="text-xs sm:text-sm text-graphite-muted mt-2 leading-relaxed">
+                Fluxo contínuo sem gargalos: os convidados transitam espontaneamente da bênção no lago até o coquetel na cascata e o banquete no salão coberto.
+              </p>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-travertine border border-travertine-border">
+                <i data-lucide="check" class="w-4 h-4 text-olive shrink-0 mt-0.5"></i>
+                <div class="text-xs">
+                  <strong class="text-graphite block">Acústica Tridimensional</strong>
+                  <span id="plan-feat-1" class="text-graphite-muted">Pista sonora isolada: o som não impede conversas nas mesas.</span>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-travertine border border-travertine-border">
+                <i data-lucide="check" class="w-4 h-4 text-olive shrink-0 mt-0.5"></i>
+                <div class="text-xs">
+                  <strong class="text-graphite block">Buffet com Fluxo Duplo</strong>
+                  <span id="plan-feat-2" class="text-graphite-muted">2 ilhas simultâneas para atendimento de 300 convidados em até 22 minutos.</span>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-travertine border border-travertine-border">
+                <i data-lucide="check" class="w-4 h-4 text-olive shrink-0 mt-0.5"></i>
+                <div class="text-xs">
+                  <strong class="text-graphite block">Retaguarda e Bastidores</strong>
+                  <span id="plan-feat-3" class="text-graphite-muted">Cozinha industrial de 75 m² com entrada lateral independente.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <a id="plan-cta" href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20receber%20a%20planta%20baixa%20em%20PDF%20e%20o%20caderno%20t%C3%A9cnico%20de%20Casamento%20da%20Villa%20Cheberle." target="_blank" rel="noopener noreferrer" class="inline-flex w-full items-center justify-center space-x-2 bg-bordeaux hover:bg-bordeaux-noble text-travertine-light py-3.5 px-5 rounded-2xl text-xs sm:text-sm font-semibold transition-all shadow-bordeaux-glow">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Solicitar Caderno Técnico em PDF</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section id="fornecedores" class="py-20 bg-travertine-muted/40 border-y border-travertine-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto space-y-3 mb-16 reveal">
+          <span class="text-olive uppercase tracking-[0.2em] text-xs font-semibold">Tranquilidade e Rigor Operacional</span>
+          <h2 class="font-serif-noble text-3xl sm:text-4xl text-graphite font-bold">
+            Curadoria de Fornecedores Homologados
+          </h2>
+          <p class="text-graphite-muted text-sm sm:text-base leading-relaxed">
+            Eliminamos surpresas contratuais e desgastes de bastidores. Todos os profissionais recomendados conhecem a fundo a engenharia elétrica, acústica e as normas patrimoniais da Villa.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- Pilar 1: Áudio -->
+          <div class="p-8 rounded-3xl bg-travertine-light border border-travertine-border shadow-rustic hover:border-olive/40 transition-colors reveal">
+            <div class="w-12 h-12 rounded-2xl bg-olive/10 text-olive flex items-center justify-center mb-6">
+              <i data-lucide="volume-2" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-serif-noble text-xl font-bold text-graphite mb-2.5">
+              Sonorização Acústica e Áudio Integrado
+            </h3>
+            <p class="text-xs sm:text-sm text-graphite-muted leading-relaxed mb-6">
+              Empresas equipadas com sistemas line array dimensionados para cobrir deck e salão de forma uniforme, sem microfonias e respeitando a fauna local.
+            </p>
+            <ul class="space-y-2.5 text-xs text-graphite font-medium">
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Aferição com sonômetro certificado</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Caixas de alta dispersão discretas</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Passagem subterrânea de cabos</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Pilar 2: Iluminação -->
+          <div class="p-8 rounded-3xl bg-travertine-light border border-travertine-border shadow-rustic hover:border-olive/40 transition-colors reveal reveal-delay-1">
+            <div class="w-12 h-12 rounded-2xl bg-warmgold/15 text-warmgold flex items-center justify-center mb-6">
+              <i data-lucide="sun" class="w-6 h-6 text-olive"></i>
+            </div>
+            <h3 class="font-serif-noble text-xl font-bold text-graphite mb-2.5">
+              Iluminação Cenográfica e Dimerização Quente
+            </h3>
+            <p class="text-xs sm:text-sm text-graphite-muted leading-relaxed mb-6">
+              Projetistas mestres em valorização de folhagens nativas, cascatas e estruturas toscanas com tonalidades quentes (2400K a 3000K) para fotografias impecáveis.
+            </p>
+            <ul class="space-y-2.5 text-xs text-graphite font-medium">
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Refletores ocultos anti-ofuscamento</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Cenas programáveis para valsa e balada</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Lustres de cristal e ferro forjado</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Pilar 3: Decoração -->
+          <div class="p-8 rounded-3xl bg-travertine-light border border-travertine-border shadow-rustic hover:border-olive/40 transition-colors reveal reveal-delay-2">
+            <div class="w-12 h-12 rounded-2xl bg-bordeaux/10 text-bordeaux flex items-center justify-center mb-6">
+              <i data-lucide="palmtree" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-serif-noble text-xl font-bold text-graphite mb-2.5">
+              Ateliês Florais e Mobiliário Europeu
+            </h3>
+            <p class="text-xs sm:text-sm text-graphite-muted leading-relaxed mb-6">
+              Decoradores que traduzem a sofisticação da Itália e da Provence: mesas imperiais em madeira maciça, linho puro, louças texturizadas e folhagens nobres.
+            </p>
+            <ul class="space-y-2.5 text-xs text-graphite font-medium">
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Acesso antecipado de 12h para montagem</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Guarda e conservação em câmara fria</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-olive"></i>
+                <span>Mobiliário toscano de acervo próprio</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Banner de Garantia de Infraestrutura Elétrica -->
+        <div class="mt-12 p-6 sm:p-8 rounded-2xl bg-travertine border border-travertine-border flex flex-col md:flex-row items-center justify-between gap-6 reveal">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-olive text-travertine-light flex items-center justify-center shrink-0">
+              <i data-lucide="zap-off" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h4 class="font-serif-noble text-base font-bold text-graphite">Garantia de Compliance Elétrico e Gerador Standby</h4>
+              <p class="text-xs sm:text-sm text-graphite-muted">A infraestrutura da Villa inclui gerador próprio automático de 150 kVA sem custo adicional de locação surpresa para o contratante.</p>
+            </div>
+          </div>
+          <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20receber%20a%20lista%20completa%20de%20fornecedores%20homologados%20e%20normas%20t%C3%A9cnicas%20da%20Villa%20Cheberle." target="_blank" rel="noopener noreferrer" class="shrink-0 px-6 py-3 rounded-full border border-graphite/20 hover:border-bordeaux text-graphite hover:text-bordeaux font-semibold text-xs transition-colors">
+            Receber Lista Homologada Completa
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="depoimentos" class="py-20 bg-travertine">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 reveal">
+          <div class="space-y-3 max-w-2xl">
+            <div class="inline-flex items-center space-x-2 text-warmgold text-xs font-bold uppercase tracking-wider">
+              <i data-lucide="check-check" class="w-4 h-4 text-olive"></i>
+              <span>Avaliações Reais no Google Maps</span>
+            </div>
+            <h2 class="font-serif-noble text-3xl sm:text-4xl text-graphite font-bold">
+              A Experiência Contada por Nossos Anfitriões
+            </h2>
+            <p class="text-graphite-muted text-sm sm:text-base leading-relaxed">
+              Consistência comprovada em casamentos inesquecíveis, celebrações de 15 anos e formaturas de prestígio.
+            </p>
+          </div>
+
+          <div class="mt-6 md:mt-0 inline-flex p-1.5 rounded-2xl bg-travertine-muted border border-travertine-border self-start">
+            <button onclick="filterReviews('todos')" id="filter-todos" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 bg-olive text-travertine-light shadow-sm">
+              Todos os Relatos
+            </button>
+            <button onclick="filterReviews('casamento')" id="filter-casamento" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 text-graphite hover:text-bordeaux">
+              Casamentos
+            </button>
+            <button onclick="filterReviews('formaturas')" id="filter-formaturas" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 text-graphite hover:text-bordeaux">
+              15 Anos e Formaturas
+            </button>
+          </div>
+        </div>
+
+        <!-- Banner com a Classificação 5.0 Google -->
+        <div class="mb-10 p-5 rounded-2xl bg-travertine-light border border-travertine-border flex flex-wrap items-center justify-between gap-4 reveal">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#4285F4]/10 text-[#4285F4] flex items-center justify-center font-bold text-lg">
+              G
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="font-serif-noble font-bold text-graphite text-lg">5.0 / 5.0</span>
+                <div class="flex text-amber-500">
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                </div>
+              </div>
+              <p class="text-xs text-graphite-muted">Classificação máxima certificada por clientes reais no Google Meu Negócio</p>
+            </div>
+          </div>
+
+          <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Li%20as%20avalia%C3%A7%C3%B5es%20da%20Villa%20Cheberle%20e%20gostaria%20de%20iniciar%20o%20planejamento%20do%20meu%20evento." target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-olive hover:text-bordeaux transition-colors flex items-center space-x-1">
+            <span>Falar com nosso atendimento</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="reviews-container">
+          
+          <!-- Avaliação 1 -->
+          <div class="review-card casamento p-6 rounded-3xl bg-travertine-light border border-travertine-border shadow-rustic flex flex-col justify-between space-y-5 reveal">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex text-amber-500">
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                </div>
+                <span class="text-[11px] font-semibold text-olive bg-olive/10 px-2 py-0.5 rounded-full">Casamento • 280 convidados</span>
+              </div>
+              <p class="text-xs sm:text-sm text-graphite leading-relaxed italic">
+                "Casar na Villa Cheberle foi a realização de um sonho europeu sem sair da Bahia. A cerimônia no deck do lago ao entardecer emocionou todos os nossos convidados. A estrutura de camarim climatizado nos deu paz total para o dia da noiva."
+              </p>
+            </div>
+
+            <div class="flex items-center space-x-3 pt-4 border-t border-travertine-border">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Mariana e Leonardo" class="w-10 h-10 rounded-full object-cover border border-olive/30" onerror="this.src='https://placehold.co/100x100/4B5E43/F5EFEB?text=ML'">
+              <div>
+                <h4 class="text-xs font-bold text-graphite">Mariana e Leonardo Vasconcelos</h4>
+                <span class="text-[10px] text-graphite-muted flex items-center space-x-1">
+                  <i data-lucide="badge-check" class="w-3 h-3 text-olive"></i>
+                  <span>Avaliação verificada no Google Maps</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avaliação 2 -->
+          <div class="review-card formaturas p-6 rounded-3xl bg-travertine-light border border-travertine-border shadow-rustic flex flex-col justify-between space-y-5 reveal reveal-delay-1">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex text-amber-500">
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                </div>
+                <span class="text-[11px] font-semibold text-bordeaux bg-bordeaux/10 px-2 py-0.5 rounded-full">15 Anos • Debutante</span>
+              </div>
+              <p class="text-xs sm:text-sm text-graphite leading-relaxed italic">
+                "A festa da minha filha Beatriz foi impecável. A cascata iluminada virou a atração principal para as fotos dos jovens. A gerência do local nos deu suporte do início ao fim com rigor profissional raríssimo de encontrar."
+              </p>
+            </div>
+
+            <div class="flex items-center space-x-3 pt-4 border-t border-travertine-border">
+              <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Carla Medeiros" class="w-10 h-10 rounded-full object-cover border border-olive/30" onerror="this.src='https://placehold.co/100x100/581825/F5EFEB?text=CM'">
+              <div>
+                <h4 class="text-xs font-bold text-graphite">Carla e Família Medeiros</h4>
+                <span class="text-[10px] text-graphite-muted flex items-center space-x-1">
+                  <i data-lucide="badge-check" class="w-3 h-3 text-olive"></i>
+                  <span>Avaliação verificada no Google Maps</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avaliação 3 -->
+          <div class="review-card formaturas p-6 rounded-3xl bg-travertine-light border border-travertine-border shadow-rustic flex flex-col justify-between space-y-5 reveal reveal-delay-2">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex text-amber-500">
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                  <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                </div>
+                <span class="text-[11px] font-semibold text-moss bg-moss/10 px-2 py-0.5 rounded-full">Gala de Medicina • 320 convidados</span>
+              </div>
+              <p class="text-xs sm:text-sm text-graphite leading-relaxed italic">
+                "Organizamos a solenidade de formatura da nossa turma na Villa. A amplitude do salão garden acomodou o palco e o banquete com circulação desimpedida. Nenhum atraso de gerador e acústica cristalina durante as homenagens."
+              </p>
+            </div>
+
+            <div class="flex items-center space-x-3 pt-4 border-t border-travertine-border">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Dr. Rodrigo Almeida" class="w-10 h-10 rounded-full object-cover border border-olive/30" onerror="this.src='https://placehold.co/100x100/2F3E2B/F5EFEB?text=RA'">
+              <div>
+                <h4 class="text-xs font-bold text-graphite">Dr. Rodrigo Almeida (Comissão de Formatura)</h4>
+                <span class="text-[10px] text-graphite-muted flex items-center space-x-1">
+                  <i data-lucide="badge-check" class="w-3 h-3 text-olive"></i>
+                  <span>Avaliação verificada no Google Maps</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section id="localizacao" class="py-20 bg-travertine-muted/50 border-y border-travertine-border relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto space-y-3 mb-14 reveal">
+          <span class="text-olive uppercase tracking-[0.2em] text-xs font-semibold">Acesso Privilegiado e Segurança</span>
+          <h2 class="font-serif-noble text-3xl sm:text-4xl text-graphite font-bold">
+            Onde nos Encontrar
+          </h2>
+          <p class="text-graphite-muted text-sm sm:text-base leading-relaxed">
+            Localização estratégica na Região Metropolitana de Salvador, com acesso facilitado para convidados, estacionamento amplo com controle de acesso e integração harmoniosa com a natureza.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch reveal">
+          
+          <!-- Coluna com Informações Práticas e Rotas (5 cols) -->
+          <div class="lg:col-span-5 flex flex-col justify-between space-y-6 bg-travertine-light p-6 sm:p-8 rounded-3xl border border-travertine-border shadow-rustic">
+            <div class="space-y-6">
+              
+              <div class="flex items-start space-x-4">
+                <div class="w-11 h-11 rounded-2xl bg-olive/10 text-olive flex items-center justify-center shrink-0 mt-1">
+                  <i data-lucide="map-pin" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-serif-noble text-base font-bold text-graphite">Endereço Oficial</h3>
+                  <p class="text-xs sm:text-sm text-graphite-muted mt-1 leading-relaxed">
+                    Rua 15 de Janeiro, 431, Recreio Ipitanga, Lauro de Freitas, Bahia. CEP 42700-000.
+                  </p>
+                  <button onclick="copyAddressToClipboard()" id="btn-copy-address" class="inline-flex items-center space-x-1.5 text-xs text-olive hover:text-bordeaux font-semibold mt-2.5 transition-colors">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span id="copy-status-text">Copiar Endereço Completo</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-4">
+                <div class="w-11 h-11 rounded-2xl bg-warmgold/15 text-warmgold flex items-center justify-center shrink-0 mt-1">
+                  <i data-lucide="clock" class="w-5 h-5 text-olive"></i>
+                </div>
+                <div>
+                  <h3 class="font-serif-noble text-base font-bold text-graphite">Visitas Guiadas com Hora Marcada</h3>
+                  <p class="text-xs sm:text-sm text-graphite-muted mt-1 leading-relaxed">
+                    De segunda a sábado, das 08h às 18h. Atendimento reservado com exclusividade de consultoria para os anfitriões.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-4">
+                <div class="w-11 h-11 rounded-2xl bg-bordeaux/10 text-bordeaux flex items-center justify-center shrink-0 mt-1">
+                  <i data-lucide="car" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-serif-noble text-base font-bold text-graphite">Estacionamento Interno Seguro</h3>
+                  <p class="text-xs sm:text-sm text-graphite-muted mt-1 leading-relaxed">
+                    Vagas para automóveis, vans e micro-ônibus com equipe de recepção e monitoramento durante todo o evento.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Botões de Abertura Direta em Aplicativos de GPS -->
+            <div class="pt-4 border-t border-travertine-border space-y-3">
+              <div class="text-xs font-semibold text-graphite">Traçar Rota Imediata:</div>
+              <div class="grid grid-cols-2 gap-3">
+                <a href="https://maps.google.com/?cid=1717529450426357299" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center space-x-2 bg-travertine hover:bg-travertine-muted border border-travertine-border text-graphite py-2.5 px-3 rounded-xl text-xs font-semibold transition-all">
+                  <i data-lucide="navigation" class="w-3.5 h-3.5 text-olive"></i>
+                  <span>Google Maps</span>
+                </a>
+                <a href="https://waze.com/ul?ll=-12.8955298,-38.3262823&navigate=yes" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center space-x-2 bg-travertine hover:bg-travertine-muted border border-travertine-border text-graphite py-2.5 px-3 rounded-xl text-xs font-semibold transition-all">
+                  <i data-lucide="compass" class="w-3.5 h-3.5 text-bordeaux"></i>
+                  <span>Abrir no Waze</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Coluna com o Mapa Interativo Leaflet (7 cols) -->
+          <div class="lg:col-span-7 rounded-3xl overflow-hidden border border-travertine-border shadow-rustic bg-travertine-light p-2.5 flex flex-col">
+            <div class="relative w-full h-[380px] sm:h-[450px] lg:h-full min-h-[380px] rounded-2xl overflow-hidden z-10" id="interactive-map">
+              <!-- O Leaflet.js injetará a renderização interativa neste container -->
+            </div>
+            <div class="px-4 py-2.5 flex items-center justify-between text-[11px] text-graphite-muted">
+              <span class="flex items-center space-x-1.5">
+                <i data-lucide="map" class="w-3.5 h-3.5 text-olive"></i>
+                <span>Coordenadas: 12°53'43.9"S 38°19'34.6"W</span>
+              </span>
+              <span class="text-olive font-medium">Toque e arraste para navegar</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section id="seletor-reserva" class="py-20 bg-travertine relative">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="bg-travertine-light rounded-3xl border border-travertine-border shadow-rustic p-8 sm:p-12 relative overflow-hidden reveal">
+          
+          <div class="max-w-2xl mx-auto text-center space-y-3 mb-10">
+            <span class="text-bordeaux uppercase tracking-[0.2em] text-xs font-bold">Simulação Imediata de Exclusividade</span>
+            <h2 class="font-serif-noble text-3xl sm:text-4xl text-graphite font-bold">
+              Consulte a Disponibilidade do Seu Evento
+            </h2>
+            <p class="text-graphite-muted text-xs sm:text-sm">
+              Configuramos somente 1 celebração por dia. Preencha os parâmetros abaixo para gerar sua solicitação personalizada e prioritária diretamente ao WhatsApp oficial da gerência.
+            </p>
+          </div>
+
+          <form id="booking-widget" class="space-y-8" onsubmit="event.preventDefault(); submitBookingToWhatsApp();">
+            
+            <!-- Parâmetro 1: Tipo de Evento -->
+            <div class="space-y-3">
+              <label class="block text-xs font-bold uppercase tracking-wider text-graphite">
+                1. Tipo de Celebração
+              </label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <label class="cursor-pointer">
+                  <input type="radio" name="event_type" value="Casamento" class="peer sr-only" checked onchange="updateSummaryPreview()">
+                  <div class="p-3.5 rounded-2xl border border-travertine-border bg-travertine text-center text-xs font-semibold text-graphite peer-checked:bg-bordeaux peer-checked:text-travertine-light peer-checked:border-bordeaux transition-all shadow-sm">
+                    Casamento
+                  </div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="event_type" value="15 Anos" class="peer sr-only" onchange="updateSummaryPreview()">
+                  <div class="p-3.5 rounded-2xl border border-travertine-border bg-travertine text-center text-xs font-semibold text-graphite peer-checked:bg-bordeaux peer-checked:text-travertine-light peer-checked:border-bordeaux transition-all shadow-sm">
+                    Festa de 15 Anos
+                  </div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="event_type" value="Corporativo" class="peer sr-only" onchange="updateSummaryPreview()">
+                  <div class="p-3.5 rounded-2xl border border-travertine-border bg-travertine text-center text-xs font-semibold text-graphite peer-checked:bg-bordeaux peer-checked:text-travertine-light peer-checked:border-bordeaux transition-all shadow-sm">
+                    Corporativo
+                  </div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="event_type" value="Bodas ou Outros" class="peer sr-only" onchange="updateSummaryPreview()">
+                  <div class="p-3.5 rounded-2xl border border-travertine-border bg-travertine text-center text-xs font-semibold text-graphite peer-checked:bg-bordeaux peer-checked:text-travertine-light peer-checked:border-bordeaux transition-all shadow-sm">
+                    Bodas e Outros
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold uppercase tracking-wider text-graphite">
+                  2. Estimativa de Convidados
+                </label>
+                <span id="guest-count-badge" class="font-serif-noble text-sm font-bold text-olive bg-olive/10 px-3 py-1 rounded-full">
+                  200 Convidados
+                </span>
+              </div>
+              <input type="range" id="guest-slider" min="50" max="350" step="10" value="200" class="w-full h-2 bg-travertine-muted rounded-lg appearance-none cursor-pointer accent-olive" oninput="updateGuestCount(this.value)">
+              <div class="flex justify-between text-[11px] text-graphite-muted font-medium px-1">
+                <span>Até 100 (Intimista)</span>
+                <span>200 (Médio Porte)</span>
+                <span>Até 350 (Capacidade Plena)</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label for="event-month" class="block text-xs font-bold uppercase tracking-wider text-graphite">
+                  3. Mês Pretendido
+                </label>
+                <select id="event-month" class="w-full bg-travertine border border-travertine-border rounded-2xl px-4 py-3 text-xs sm:text-sm text-graphite focus:outline-none focus:ring-2 focus:ring-olive" onchange="updateSummaryPreview()">
+                  <option value="Janeiro">Janeiro</option>
+                  <option value="Fevereiro">Fevereiro</option>
+                  <option value="Março">Março</option>
+                  <option value="Abril">Abril</option>
+                  <option value="Maio">Maio</option>
+                  <option value="Junho">Junho</option>
+                  <option value="Julho">Julho</option>
+                  <option value="Agosto">Agosto</option>
+                  <option value="Setembro">Setembro</option>
+                  <option value="Outubro" selected>Outubro</option>
+                  <option value="Novembro">Novembro</option>
+                  <option value="Dezembro">Dezembro</option>
+                </select>
+              </div>
+
+              <div class="space-y-2">
+                <label for="event-year" class="block text-xs font-bold uppercase tracking-wider text-graphite">
+                  Ano do Evento
+                </label>
+                <select id="event-year" class="w-full bg-travertine border border-travertine-border rounded-2xl px-4 py-3 text-xs sm:text-sm text-graphite focus:outline-none focus:ring-2 focus:ring-olive" onchange="updateSummaryPreview()">
+                  <option value="2026" selected>2026 (Calendário Vigente)</option>
+                  <option value="2027">2027 (Pré-reserva Exclusiva)</option>
+                  <option value="2028">2028 (Planejamento Antecipado)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Pré-visualização da Mensagem do WhatsApp -->
+            <div class="p-4 rounded-2xl bg-travertine border border-travertine-border/80 text-xs text-graphite-muted flex items-start space-x-3">
+              <i data-lucide="message-square" class="w-4 h-4 text-olive shrink-0 mt-0.5"></i>
+              <div>
+                <strong class="text-graphite block">Mensagem personalizada gerada:</strong>
+                <p id="preview-text" class="italic text-graphite-muted mt-0.5">
+                  "Olá! Gostaria de consultar disponibilidade para um Casamento de 200 convidados em Outubro de 2026..."
+                </p>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button type="submit" class="w-full group relative inline-flex items-center justify-center space-x-3 bg-bordeaux hover:bg-bordeaux-noble text-travertine-light py-4 px-8 rounded-full font-serif-noble font-semibold text-sm sm:text-base tracking-wider transition-all duration-300 shadow-bordeaux-glow hover:scale-[1.01]">
+                <i data-lucide="send" class="w-5 h-5"></i>
+                <span>Consultar Disponibilidade de Data via WhatsApp</span>
+              </button>
+              <div class="flex items-center justify-center space-x-2 text-[11px] text-graphite-muted mt-3">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-olive"></i>
+                <span>Retorno da gerência comercial em até 2 horas em dias úteis</span>
+              </div>
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-moss-dark text-travertine-muted border-t border-moss pt-16 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-moss">
+        
+        <div class="md:col-span-5 space-y-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-full border border-travertine-border/30 flex items-center justify-center text-travertine-light">
+              <i data-lucide="castle" class="w-5 h-5"></i>
+            </div>
+            <span class="font-serif-noble text-lg font-bold text-travertine-light tracking-wider">VILLA CHEBERLE</span>
+          </div>
+          <p class="text-xs sm:text-sm text-travertine-muted/80 leading-relaxed max-w-sm">
+            Espaço Garden de alto padrão inspirado nas vilas toscanas europeias. Exclusividade rigorosa de 1 evento por dia para garantir a celebração dos seus sonhos com privacidade absoluta.
+          </p>
+          <div class="pt-2">
+            <span class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-olive/30 text-travertine-light text-[11px] font-medium border border-olive/40">
+              <span class="w-1.5 h-1.5 rounded-full bg-warmgold"></span>
+              <span>Salvador e Região Metropolitana, Bahia</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="md:col-span-4 space-y-3">
+          <h4 class="font-serif-noble text-sm font-bold text-travertine-light uppercase tracking-wider">Canais Oficiais</h4>
+          <ul class="space-y-2.5 text-xs text-travertine-muted">
+            <li class="flex items-center space-x-2.5">
+              <i data-lucide="phone-call" class="w-4 h-4 text-warmgold"></i>
+              <span>WhatsApp Comercial: (71) 98199-0320</span>
+            </li>
+            <li class="flex items-center space-x-2.5">
+              <i data-lucide="map-pin" class="w-4 h-4 text-warmgold"></i>
+              <span>Rua 15 de Janeiro, 431, Recreio Ipitanga, Lauro de Freitas</span>
+            </li>
+            <li class="flex items-center space-x-2.5">
+              <i data-lucide="shield" class="w-4 h-4 text-warmgold"></i>
+              <span>Visitas técnicas exclusivas com agendamento prévio</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-3 space-y-4">
+          <h4 class="font-serif-noble text-sm font-bold text-travertine-light uppercase tracking-wider">Redes Sociais Oficiais</h4>
+          <p class="text-xs text-travertine-muted/70">Acompanhe fotos e registros de nossas montagens semanais:</p>
+          
+          <div class="flex items-center space-x-3">
+            <a href="https://www.instagram.com/villacheberle?stkn=MTVtMjl2eGw5M3R0eg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-2xl bg-olive/40 hover:bg-olive text-travertine-light flex items-center justify-center transition-colors border border-olive/50" title="Instagram Oficial" aria-label="Acessar Instagram Oficial">
+              <i data-lucide="instagram" class="w-5 h-5"></i>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61555730407868" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-2xl bg-olive/40 hover:bg-olive text-travertine-light flex items-center justify-center transition-colors border border-olive/50" title="Facebook Oficial" aria-label="Acessar Facebook Oficial">
+              <i data-lucide="facebook" class="w-5 h-5"></i>
+            </a>
+            <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20informa%C3%A7%C3%B5es%20comerciais%20sobre%20a%20loca%C3%A7%C3%A3o%20da%20Villa%20Cheberle." target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-2xl bg-bordeaux hover:bg-bordeaux-glow text-travertine-light flex items-center justify-center transition-colors border border-bordeaux-glow" title="WhatsApp Direto" aria-label="Acessar WhatsApp Direto">
+              <i data-lucide="message-circle" class="w-5 h-5"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-travertine-muted/60 space-y-3 sm:space-y-0">
+        <div>
+          &copy; 2026 Villa Cheberle. Todos os direitos reservados.
+        </div>
+        <div class="flex items-center space-x-4">
+          <span>Privacidade e Diretrizes Operacionais</span>
+          <span>•</span>
+          <span>Padrão Internacional de Conversão</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <button id="back-to-top-btn" onclick="scrollToTopSmooth()" class="fixed bottom-24 right-6 z-40 w-11 h-11 rounded-full bg-travertine-light border border-warmgold/60 text-bordeaux shadow-card-warm flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none hover:bg-bordeaux hover:text-travertine-light hover:border-bordeaux hover:scale-105" title="Voltar ao início" aria-label="Voltar ao início da página">
+    <i data-lucide="chevron-up" class="w-5 h-5"></i>
+  </button>
+
+  <aside aria-label="Acesso Rápido WhatsApp" class="fixed bottom-6 right-6 z-50">
+    <a href="https://wa.me/5571981990320?text=Ol%C3%A1!%20Estou%20no%20site%20da%20Villa%20Cheberle%20e%20gostaria%20de%20consultar%20as%20datas%20dispon%C3%ADveis%20com%20um%20consultor." target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-4 py-3.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 group" title="Conversar no WhatsApp Oficial">
+      <i data-lucide="message-circle" class="w-5 h-5 fill-current"></i>
+      <span class="text-xs font-bold tracking-wide hidden sm:inline pr-1">Falar com a Villa</span>
+    </a>
+  </aside>
+
+  <script>
+    // Inicialização dos ícones Lucide
+    lucide.createIcons();
+
+    // Menu Mobile
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+        });
+      });
+    }
+
+    // Monitoramento da Faixa Luminosa de Rolagem e Botão Voltar ao Topo
+    const luminousBar = document.getElementById('scroll-luminous-bar');
+    const backToTopBtn = document.getElementById('back-to-top-btn');
+
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progressPercent = docHeight > 0 ? (scrollPos / docHeight) * 100 : 0;
+
+      if (luminousBar) {
+        luminousBar.style.width = `${progressPercent}%`;
+      }
+
+      // Ativação do botão de retorno ao ultrapassar a altura da primeira página (Hero)
+      if (backToTopBtn) {
+        if (scrollPos > window.innerHeight * 0.75) {
+          backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+          backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+        } else {
+          backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+          backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+      }
+    }, { passive: true });
+
+    function scrollToTopSmooth() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    // Sistema de Animação Fade-In por Scroll com IntersectionObserver
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -40px 0px',
+      threshold: 0.12
+    };
+
+    const scrollObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      scrollObserver.observe(el);
+    });
+
+    // Inicialização do Mapa Interativo Leaflet
+    let villaMap = null;
+    function initInteractiveMap() {
+      const mapElement = document.getElementById('interactive-map');
+      if (!mapElement) return;
+
+      const lat = -12.8955298;
+      const lng = -38.3262823;
+
+      villaMap = L.map('interactive-map', {
+        center: [lat, lng],
+        zoom: 15,
+        scrollWheelZoom: false
+      });
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+        crossOrigin: true
+      }).addTo(villaMap);
+
+      setTimeout(() => {
+        if (villaMap) {
+          villaMap.invalidateSize();
+        }
+      }, 350);
+
+      const customIcon = L.divIcon({
+        className: 'custom-leaflet-marker',
+        html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 20v-7.8a2 2 0 0 0-.6-1.4l-7-7a2 2 0 0 0-2.8 0l-7 7a2 2 0 0 0-.6 1.4V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Z"/><path d="M6 10V5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v5"/><path d="M15 10V5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v5"/><path d="M10 22v-6a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v6"/></svg>',
+        iconSize: [42, 42],
+        iconAnchor: [21, 21],
+        popupAnchor: [0, -22]
+      });
+
+      const marker = L.marker([lat, lng], { icon: customIcon }).addTo(villaMap);
+
+      const popupContent = `
+        <div style="min-width: 190px; padding: 4px;">
+          <h4 style="font-family: 'Cinzel', serif; font-weight: 700; color: #581825; margin: 0 0 4px 0; font-size: 14px;">Villa Cheberle</h4>
+          <p style="font-size: 11px; color: #585854; line-height: 1.35; margin: 0 0 8px 0;">Rua 15 de Janeiro, 431, Recreio Ipitanga, Lauro de Freitas</p>
+          <a href="https://maps.google.com/?cid=1717529450426357299" target="_blank" rel="noopener noreferrer" style="display: inline-block; background-color: #4B5E43; color: #FAF7F5; padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; text-decoration: none;">Abrir no Google Maps</a>
+        </div>
+      `;
+      marker.bindPopup(popupContent).openPopup();
+    }
+
+    // Copiar Endereço Completo para a Área de Transferência
+    function copyAddressToClipboard() {
+      const address = "Villa Cheberle, Rua 15 de Janeiro, 431, Recreio Ipitanga, Lauro de Freitas - BA, 42700-000";
+      const tempInput = document.createElement("textarea");
+      tempInput.value = address;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      const statusEl = document.getElementById("copy-status-text");
+      if (statusEl) {
+        statusEl.innerText = "Endereço Copiado com Sucesso!";
+        setTimeout(() => {
+          statusEl.innerText = "Copiar Endereço Completo";
+        }, 2500);
+      }
+    }
+
+    // Dados e Controle da Planta Baixa Interativa
+    const floorPlanConfigs = {
+      casamento: {
+        title: "Layout: Casamento Completo (Cerimônia no Deck e Banquete Garden)",
+        ceremonyLabel: "Área de Cerimônia / Deck do Lago",
+        ceremonySub: "160 Cadeiras Tiffany + Altar Flutuante",
+        tablesCount: "16 Mesas Redondas (Família e Convidados)",
+        centerTitle: "Pista de Dança Central",
+        centerSub: "Microcemento térmico e Som Direcionado",
+        rightTitle: "Ilha de Bar e Coquetelaria 360°",
+        headline: "Harmonia Operacional para Casamentos",
+        desc: "Fluxo contínuo sem gargalos: os convidados transitam espontaneamente da bênção no lago até o coquetel na cascata e o banquete no salão coberto.",
+        f1: "Pista sonora isolada: o som não impede conversas nas mesas de convidados.",
+        f2: "2 ilhas de buffet simultâneas para atendimento de 300 convidados em 22 min.",
+        f3: "Cozinha industrial de 75 m² com entrada lateral e doca de descarga dedicada.",
+        ctaText: "Solicitar Caderno Técnico do Casamento em PDF",
+        ctaMsg: "Olá! Gostaria de receber a planta baixa em PDF e o caderno técnico de Casamento da Villa Cheberle."
+      },
+      quinze: {
+        title: "Layout: Festa de 15 Anos (Lounge Teens e Megapista Central)",
+        ceremonyLabel: "Lounge Fotográfico e Cascata Iluminada",
+        ceremonySub: "Pontos de fotos temáticos com iluminação cênica dourada",
+        tablesCount: "10 Mesas amplas com visão panorâmica da pista",
+        centerTitle: "Megapista com Iluminação Robótica",
+        centerSub: "Palco para DJ, telão de LED e estrutura de pista suspensa",
+        rightTitle: "Estações Teen e Mocktail Bar",
+        headline: "Dinamismo Total para Debutantes",
+        desc: "Estruturação focada em dois públicos: ambientes acolhedores para a família e familiares mais velhos, e uma arena vibrante e segura para os jovens.",
+        f1: "Isolamento de som nas áreas de lounge dos pais e familiares.",
+        f2: "Estações de bebidas especiais e ilhas de finger foods contínuas.",
+        f3: "Camarim exclusivo para troca de vestidos com climatização e espelho de camarim.",
+        ctaText: "Solicitar Layout de 15 Anos em PDF",
+        ctaMsg: "Olá! Gostaria de receber a planta baixa em PDF e o caderno técnico para Festa de 15 Anos da Villa Cheberle."
+      },
+      corporativo: {
+        title: "Layout: Corporativo e Solene (Palco Central e Plenária)",
+        ceremonyLabel: "Foyer de Credenciamento e Welcome Coffee",
+        ceremonySub: "Área de recepção com 3 totens e guarda-volumes",
+        tablesCount: "20 Mesas com tomadas dedicadas para notebooks",
+        centerTitle: "Plenária e Palco Principal",
+        centerSub: "Projeção mapeada e púlpito com microfonia dedicada",
+        rightTitle: "Área de Networking e Coffee Break",
+        headline: "Precisão e Infraestrutura para Negócios",
+        desc: "Conectividade de alta velocidade com fibra óptica redundante, gerador estabilizado e ambiente climatizado ideal para convenções, premiações e jantares corporativos.",
+        f1: "Rede Wi-Fi de alta densidade para até 400 conexões simultâneas.",
+        f2: "Acústica calibrada para clareza vocal e apresentações corporativas.",
+        f3: "Estacionamento com serviço de recepção e acesso para vans e micro-ônibus.",
+        ctaText: "Solicitar Caderno Corporativo em PDF",
+        ctaMsg: "Olá! Gostaria de receber a planta baixa em PDF e o caderno técnico para Eventos Corporativos da Villa Cheberle."
+      }
+    };
+
+    function setFloorPlan(mode) {
+      const data = floorPlanConfigs[mode];
+      if (!data) return;
+
+      ['casamento', 'quinze', 'corporativo'].forEach(id => {
+        const btn = document.getElementById(`tab-${id}`);
+        if (id === mode) {
+          btn.className = "px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 bg-olive text-travertine-light shadow-sm";
+        } else {
+          btn.className = "px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 text-graphite hover:text-bordeaux";
+        }
+      });
+
+      document.getElementById('diagram-title').innerText = data.title;
+      document.getElementById('zone-ceremony-label').innerText = data.ceremonyLabel;
+      document.getElementById('zone-ceremony-sub').innerText = data.ceremonySub;
+      document.getElementById('zone-tables-count').innerText = data.tablesCount;
+      document.getElementById('zone-center-title').innerText = data.centerTitle;
+      document.getElementById('zone-center-sub').innerText = data.centerSub;
+      document.getElementById('zone-right-title').innerText = data.rightTitle;
+
+      document.getElementById('plan-headline').innerText = data.headline;
+      document.getElementById('plan-description').innerText = data.desc;
+      document.getElementById('plan-feat-1').innerText = data.f1;
+      document.getElementById('plan-feat-2').innerText = data.f2;
+      document.getElementById('plan-feat-3').innerText = data.f3;
+      
+      const planCtaEl = document.getElementById('plan-cta');
+      if (planCtaEl) {
+        const spanEl = planCtaEl.querySelector('span');
+        if (spanEl) spanEl.innerText = data.ctaText;
+        planCtaEl.href = `https://wa.me/5571981990320?text=${encodeURIComponent(data.ctaMsg)}`;
+      }
+    }
+
+    function submitBookingToWhatsApp() {
+      const selectedType = document.querySelector('input[name="event_type"]:checked')?.value || "Casamento";
+      const guestCount = document.getElementById('guest-slider')?.value || "200";
+      const month = document.getElementById('event-month')?.value || "Outubro";
+      const year = document.getElementById('event-year')?.value || "2026";
+
+      const message = `Olá! Gostaria de consultar disponibilidade de data na Villa Cheberle:\n\n• Celebração: ${selectedType}\n• Número Estimado de Convidados: ${guestCount}\n• Mês/Ano Pretendido: ${month} de ${year}\n\nPoderiam me enviar os valores e agendar uma visita guiada?`;
+      const encoded = encodeURIComponent(message);
+      const url = `https://wa.me/5571981990320?text=${encoded}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    // Carregamento Inicial no DOM
+    window.addEventListener('DOMContentLoaded', () => {
+      updateSummaryPreview();
+      initInteractiveMap();
+    });
+  </script>
+</body>
+</html>
+```
